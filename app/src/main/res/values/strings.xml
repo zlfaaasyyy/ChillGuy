@@ -1,3 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ChillGuy</string>
+    <string name="tagline">Your 7-day glow up starts here.</string>
+    <string name="btn_get_started">Get Started</string>
+    <string name="btn_login">I already have an account</string>
+    <string name="btn_sign_in">Sign In</string>
+    <string name="btn_register">Create Account</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="no_equipment">No equipment needed. Just you.</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_workout">Workout</string>
+    <string name="nav_music">Music</string>
+    <string name="nav_profile">Profile</string>
+    <string name="feature_plan">7-Day Plan</string>
+    <string name="feature_music">Workout Music</string>
+    <string name="feature_track">Track Progress</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="logout">Logout</string>
+    <string name="btn_refresh">Refresh</string>
+    <string name="error_no_internet">No internet connection. Showing cached data.</string>
+    <string name="btn_start">Start</string>
+    <string name="btn_pause">Pause</string>
+    <string name="btn_next">Next Exercise</string>
+    <string name="workout_complete">Workout Complete! 🎉</string>
+    <string name="day_label">Day %d</string>
 </resources>
