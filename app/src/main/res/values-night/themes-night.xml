@@ -1,7 +1,64 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.ChillGuy" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ChillGuy" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:colorBackground">@color/dark_background</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="colorPrimaryVariant">@color/dark_primary_container</item>
+        <item name="colorOnPrimary">@color/dark_on_primary</item>
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorOnSecondary">@color/dark_on_secondary</item>
+        <item name="android:textColorPrimary">@color/dark_on_surface</item>
+        <item name="android:textColorSecondary">@color/dark_on_surface_variant</item>
+        <item name="android:statusBarColor">@color/dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/dark_surface_container_low</item>
     </style>
+
+    <style name="Theme.ChillGuy.Splash" parent="Theme.ChillGuy">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/dark_background</item>
+    </style>
+
+    <style name="Theme.ChillGuy.Auth" parent="Theme.ChillGuy">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="Widget.ChillGuy.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/dark_primary_container</item>
+        <item name="android:textColor">@color/dark_on_primary</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/quicksand_semibold</item>
+        <item name="elevation">4dp</item>
+    </style>
+
+    <style name="Widget.ChillGuy.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/dark_outline</item>
+        <item name="android:textColor">@color/dark_on_surface</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/quicksand_medium</item>
+    </style>
+
+    <style name="Widget.ChillGuy.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/dark_card</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+
+    <style name="Widget.ChillGuy.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/dark_surface_container</item>
+        <item name="boxStrokeColor">@color/dark_outline</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="hintTextColor">@color/dark_on_surface_variant</item>
+        <item name="android:fontFamily">@font/quicksand_regular</item>
+    </style>
+
 </resources>
