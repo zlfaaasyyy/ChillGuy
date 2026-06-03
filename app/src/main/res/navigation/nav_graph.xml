@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.chillguy.fragment.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/workoutFragment"
+        android:name="com.example.chillguy.fragment.WorkoutFragment"
+        android:label="Workout" />
+
+    <fragment
+        android:id="@+id/musicFragment"
+        android:name="com.example.chillguy.fragment.MusicFragment"
+        android:label="Music" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.chillguy.fragment.ProfileFragment"
+        android:label="Profile" />
+
+</navigation>
