@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="container_padding">20dp</dimen>
+    <dimen name="card_corner_radius">20dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_inner_padding">16dp</dimen>
+    <dimen name="btn_height">56dp</dimen>
+    <dimen name="btn_corner_radius">24dp</dimen>
+    <dimen name="text_logo">18sp</dimen>
+    <dimen name="text_screen_title">20sp</dimen>
+    <dimen name="text_section_header">16sp</dimen>
+    <dimen name="text_card_title">15sp</dimen>
+    <dimen name="text_body">13sp</dimen>
+    <dimen name="text_label">11sp</dimen>
+    <dimen name="text_timer">36sp</dimen>
+    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="avatar_size">72dp</dimen>
+    <dimen name="day_circle_size">44dp</dimen>
+    <dimen name="album_cover_size">48dp</dimen>
+</resources>
