@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorBackground">
+    android:background="?android:attr/colorBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:text="Ready for your glow up today?"
             android:textSize="13sp"
             android:fontFamily="@font/quicksand_regular"
-            android:textColor="@color/secondary_text"
+            android:textColor="?android:attr/textColorSecondary"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="20dp" />
 
@@ -38,45 +38,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="@color/light_primary_container"
+            app:cardBackgroundColor="?attr/colorPrimaryVariant"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="16dp">
 
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="Daily Quote"
+                    android:textSize="11sp"
+                    android:fontFamily="@font/quicksand_regular"
+                    android:textColor="@color/light_secondary"
+                    android:background="@drawable/bg_chip"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:layout_marginBottom="8dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Daily Quote"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/quicksand_regular"
-                        android:textColor="?attr/colorPrimary"
-                        android:background="@drawable/bg_chip"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:paddingTop="2dp"
-                        android:paddingBottom="2dp"
-                        android:layout_marginBottom="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="\"Softness is a strength. Stretch your limits with ease and grace today.\""
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="&quot;Softness is a strength. Stretch your limits with ease and grace today.&quot;"
                     android:textSize="13sp"
                     android:fontFamily="@font/quicksand_regular"
-                    android:textColor="@color/light_on_primary_container" />
-                </LinearLayout>
-
+                    android:textColor="?android:attr/textColorPrimary" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -84,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="@color/card_pink"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp">
 
@@ -97,8 +89,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -109,30 +101,30 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/quicksand_semibold"
                             android:text="Weekly Goal"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="16sp" />
+                            android:textSize="16sp"
+                            android:fontFamily="@font/quicksand_semibold"
+                            android:textColor="?android:attr/textColorPrimary" />
 
                         <TextView
                             android:id="@+id/tvCompletedText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/quicksand_regular"
                             android:text="0 / 7 Days Completed"
-                            android:textColor="?attr/colorPrimary"
-                            android:textSize="13sp" />
+                            android:textSize="13sp"
+                            android:fontFamily="@font/quicksand_regular"
+                            android:textColor="?attr/colorPrimary" />
                     </LinearLayout>
 
                     <TextView
                         android:id="@+id/tvPercent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:fontFamily="@font/quicksand_bold"
                         android:text="0%"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/quicksand_bold"
                         android:textColor="@color/accent_coral"
-                        android:textSize="18sp" />
+                        android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
@@ -140,9 +132,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:progress="0"
+                    app:trackCornerRadius="8dp"
                     app:indicatorColor="@color/accent_coral"
-                    app:trackColor="@color/light_surface_container_highest"
-                    app:trackCornerRadius="8dp" />
+                    app:trackColor="?attr/colorSurface" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -176,39 +168,21 @@
                 android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="@color/light_surface_container_lowest"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        android:text="💧"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:orientation="vertical" android:padding="12dp" android:gravity="center_vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="💧" android:textSize="20sp" android:layout_marginBottom="4dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Hydration" android:textSize="13sp"
                         android:fontFamily="@font/quicksand_semibold"
-                        android:text="Hydration"
-                        android:textColor="?android:attr/textColorPrimary"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorPrimary"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="1.2L / 2L" android:textSize="11sp"
                         android:fontFamily="@font/quicksand_regular"
-                        android:text="1.2L / 2L"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="11sp" />
+                        android:textColor="?android:attr/textColorSecondary"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -217,7 +191,7 @@
                 android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardBackgroundColor="@color/light_surface_container_lowest"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
@@ -225,15 +199,16 @@
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="🧘" android:textSize="20sp" android:layout_marginBottom="4dp"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="Meditation" android:textSize="13sp" android:fontFamily="@font/quicksand_semibold"
+                        android:text="Meditation" android:textSize="13sp"
+                        android:fontFamily="@font/quicksand_semibold"
                         android:textColor="?android:attr/textColorPrimary"/>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="10 mins daily" android:textSize="11sp" android:fontFamily="@font/quicksand_regular"
-                        android:textColor="@color/secondary_text"/>
+                        android:text="10 mins daily" android:textSize="11sp"
+                        android:fontFamily="@font/quicksand_regular"
+                        android:textColor="?android:attr/textColorSecondary"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>
-
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

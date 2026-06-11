@@ -68,7 +68,7 @@ public class WorkoutFragment extends Fragment {
             for (WorkoutProgress p : progressList) {
                 if (p.isCompleted) completedDays.add(p.dayNumber);
             }
-            
+
             int streak = 0;
             for (int i = 1; i <= 7; i++) {
                 if (completedDays.contains(i)) streak++;

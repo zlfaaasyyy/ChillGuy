@@ -27,4 +27,5 @@
     <string name="btn_next">Next Exercise</string>
     <string name="workout_complete">Workout Complete! 🎉</string>
     <string name="day_label">Day %d</string>
+    <string name="desc_hero_welcome">Welcome Hero Image</string>
 </resources>

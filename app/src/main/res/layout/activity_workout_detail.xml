@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorBackground">
+    android:background="?android:attr/colorBackground">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:background="?attr/colorBackground"
+        android:background="?android:attr/colorBackground"
         android:elevation="0dp"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="?attr/colorPrimary"
@@ -84,14 +84,14 @@
                 android:id="@+id/tvMotivation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="\"Keep going, you've got this!\""
-            android:textSize="12sp"
-            android:fontFamily="@font/quicksand_regular"
-            android:textColor="@color/secondary_text"
-            android:textStyle="italic"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp" />
+                android:text="&quot;Keep going, you've got this!&quot;"
+                android:textSize="12sp"
+                android:fontFamily="@font/quicksand_regular"
+                android:textColor="@color/secondary_text"
+                android:textStyle="italic"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,7 +104,7 @@
                     android:layout_width="0dp"
                     android:layout_height="52dp"
                     android:layout_weight="1"
-                    android:text="@string/btn_start"
+                    android:text="Start"
                     android:textSize="14sp"
                     android:fontFamily="@font/quicksand_semibold"
                     style="@style/Widget.ChillGuy.Button.Primary"
@@ -115,7 +115,7 @@
                     android:layout_width="0dp"
                     android:layout_height="52dp"
                     android:layout_weight="1"
-                    android:text="@string/btn_pause"
+                    android:text="Pause"
                     android:textSize="14sp"
                     android:fontFamily="@font/quicksand_medium"
                     style="@style/Widget.ChillGuy.Button.Secondary"

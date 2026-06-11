@@ -22,7 +22,7 @@
             android:text="💪"
             android:textSize="20sp"
             android:gravity="center"
-            android:background="@drawable/bg_exercise_icon"
+            android:background="@drawable/bg_button_primary"
             android:layout_marginEnd="12dp" />
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:text="Plank Hold"
                 android:textSize="14sp"
                 android:fontFamily="@font/quicksand_semibold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@color/dark_background" />
 
             <TextView
                 android:id="@+id/tvExerciseLabel"
@@ -47,7 +47,7 @@
                 android:text="01:00 min"
                 android:textSize="12sp"
                 android:fontFamily="@font/quicksand_regular"
-                android:textColor="@color/secondary_text" />
+                android:textColor="@color/dark_card" />
         </LinearLayout>
 
         <ImageView

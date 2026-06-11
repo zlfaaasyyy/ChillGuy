@@ -25,7 +25,7 @@
             android:text="01"
             android:textSize="18sp"
             android:fontFamily="@font/quicksand_bold"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="@color/dark_on_secondary"
             android:gravity="center"
             android:background="@drawable/bg_day_circle"
             android:layout_marginEnd="14dp" />
@@ -43,7 +43,7 @@
                 android:text="Full Body Warm Up"
                 android:textSize="14sp"
                 android:fontFamily="@font/quicksand_semibold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@color/dark_card" />
 
             <TextView
                 android:id="@+id/tvTarget"
@@ -52,7 +52,7 @@
                 android:text="Full Body · 20 min"
                 android:textSize="12sp"
                 android:fontFamily="@font/quicksand_regular"
-                android:textColor="@color/secondary_text" />
+                android:textColor="@color/dark_background" />
         </LinearLayout>
 
         <ImageView
