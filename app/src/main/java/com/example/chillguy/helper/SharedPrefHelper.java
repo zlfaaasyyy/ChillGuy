@@ -5,10 +5,11 @@ import android.content.SharedPreferences;
 
 public class SharedPrefHelper {
 
-    private static final String PREF_NAME = "ChillGuyPrefs";
-    private static final String KEY_LOGGED_IN  = "isLoggedIn";
-    private static final String KEY_USERNAME   = "username";
-    private static final String KEY_EMAIL      = "email";
+    private static final String PREF_NAME   = "ChillGuyPrefs";
+    private static final String KEY_LOGGED_IN = "isLoggedIn";
+    private static final String KEY_USERNAME  = "username";
+    private static final String KEY_EMAIL     = "email";
+    private static final String KEY_PASSWORD  = "password";
     private static final String KEY_DARK_THEME = "isDarkTheme";
 
     private final SharedPreferences prefs;
@@ -16,13 +17,23 @@ public class SharedPrefHelper {
     public SharedPrefHelper(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
-
-    public void setLoggedIn(boolean status, String username, String email) {
+    public void register(String username, String email, String password) {
         prefs.edit()
-                .putBoolean(KEY_LOGGED_IN, status)
-                .putString(KEY_USERNAME,   username)
-                .putString(KEY_EMAIL,      email)
+                .putString(KEY_USERNAME, username)
+                .putString(KEY_EMAIL,    email)
+                .putString(KEY_PASSWORD, password)
                 .apply();
+    }
+
+    public void setLoggedIn(boolean status) {
+        prefs.edit().putBoolean(KEY_LOGGED_IN, status).apply();
+    }
+
+    public boolean checkLogin(String username, String password) {
+        String savedUsername = prefs.getString(KEY_USERNAME, "");
+        String savedPassword = prefs.getString(KEY_PASSWORD, "");
+        return savedUsername.equalsIgnoreCase(username)
+                && savedPassword.equals(password);
     }
 
     public boolean isLoggedIn() {
@@ -38,9 +49,19 @@ public class SharedPrefHelper {
     }
 
     public void logout() {
-        boolean savedTheme = isDarkTheme();
+        boolean savedTheme    = isDarkTheme();
+        String  savedUsername = getUsername();
+        String  savedEmail    = getEmail();
+        String  savedPassword = prefs.getString(KEY_PASSWORD, "");
+
         prefs.edit().clear().apply();
-        setDarkTheme(savedTheme);
+
+        prefs.edit()
+                .putString(KEY_USERNAME,  savedUsername)
+                .putString(KEY_EMAIL,     savedEmail)
+                .putString(KEY_PASSWORD,  savedPassword)
+                .putBoolean(KEY_DARK_THEME, savedTheme)
+                .apply();
     }
 
     public void setDarkTheme(boolean isDark) {

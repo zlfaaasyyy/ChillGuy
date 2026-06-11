@@ -17,20 +17,17 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private TextInputLayout tilUsername, tilEmail, tilPassword, tilConfirmPassword;
-    private TextInputEditText etUsername, etEmail, etPassword, etConfirmPassword;
-    private TextView tvError;
-    private MaterialButton btnRegister;
-    private SharedPrefHelper prefHelper;
+    private TextInputLayout    tilUsername, tilEmail, tilPassword, tilConfirmPassword;
+    private TextInputEditText  etUsername, etEmail, etPassword, etConfirmPassword;
+    private TextView           tvError;
+    private SharedPrefHelper   prefHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        prefHelper = new SharedPrefHelper(this);
-
-        // ── Bind views ────────────────────────────────────────────────────────
+        prefHelper         = new SharedPrefHelper(this);
         tilUsername        = findViewById(R.id.tilUsername);
         tilEmail           = findViewById(R.id.tilEmail);
         tilPassword        = findViewById(R.id.tilPassword);
@@ -40,10 +37,10 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword         = findViewById(R.id.etPassword);
         etConfirmPassword  = findViewById(R.id.etConfirmPassword);
         tvError            = findViewById(R.id.tvError);
-        btnRegister        = findViewById(R.id.btnRegister);
 
-        ImageButton btnBack   = findViewById(R.id.btnBack);
-        TextView    tvGoLogin = findViewById(R.id.tvGoToLogin);
+        ImageButton    btnBack     = findViewById(R.id.btnBack);
+        MaterialButton btnRegister = findViewById(R.id.btnRegister);
+        TextView       tvGoLogin   = findViewById(R.id.tvGoToLogin);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -62,14 +59,10 @@ public class RegisterActivity extends AppCompatActivity {
         tilPassword.setError(null);
         tilConfirmPassword.setError(null);
 
-        String username = etUsername.getText() != null
-                ? etUsername.getText().toString().trim() : "";
-        String email    = etEmail.getText() != null
-                ? etEmail.getText().toString().trim() : "";
-        String password = etPassword.getText() != null
-                ? etPassword.getText().toString() : "";
-        String confirm  = etConfirmPassword.getText() != null
-                ? etConfirmPassword.getText().toString() : "";
+        String username = etUsername.getText() != null ? etUsername.getText().toString().trim() : "";
+        String email    = etEmail.getText()    != null ? etEmail.getText().toString().trim()    : "";
+        String password = etPassword.getText() != null ? etPassword.getText().toString()        : "";
+        String confirm  = etConfirmPassword.getText() != null ? etConfirmPassword.getText().toString() : "";
 
         if (TextUtils.isEmpty(username)) {
             tilUsername.setError("Username cannot be empty");
@@ -88,7 +81,8 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        prefHelper.setLoggedIn(true, username, email);
+        prefHelper.register(username, email, password);
+        prefHelper.setLoggedIn(true);
 
         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
