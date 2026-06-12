@@ -41,38 +41,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Core &amp; Abs — Day 03"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:fontFamily="@font/quicksand_semibold"
                 android:textColor="?android:attr/textColorSecondary"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="28dp" />
 
             <FrameLayout
-                android:id="@+id/frameTimer"
-                android:layout_width="240dp"
-                android:layout_height="240dp"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp">
 
-                <ProgressBar
-                    android:id="@+id/progressRing"
-                    style="?android:attr/progressBarStyleHorizontal"
+                <com.example.chillguy.view.CircularTimerView
+                    android:id="@+id/circularTimer"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:indeterminate="false"
-                    android:progress="0"
-                    android:max="100"
-                    android:rotation="-90"
-                    android:progressDrawable="@drawable/circular_progress"
-                    android:layout_gravity="center" />
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/tvTimer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="00:45"
-                    android:textSize="36sp"
+                    android:text="00:30"
+                    android:textSize="38sp"
                     android:fontFamily="@font/quicksand_bold"
                     android:textColor="?android:attr/textColorPrimary"
                     android:letterSpacing="0.02"
@@ -81,17 +73,28 @@
             </FrameLayout>
 
             <TextView
+                android:id="@+id/tvExerciseName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Plank Hold"
+                android:textSize="16sp"
+                android:fontFamily="@font/quicksand_semibold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp" />
+
+            <TextView
                 android:id="@+id/tvMotivation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="&quot;Keep going, you've got this!&quot;"
+                android:text="&quot;Keep going, you&apos;ve got this!&quot;"
                 android:textSize="12sp"
                 android:fontFamily="@font/quicksand_regular"
                 android:textColor="@color/secondary_text"
-                android:textStyle="italic"
+                android:alpha="0.7"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="28dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,7 +107,7 @@
                     android:layout_width="0dp"
                     android:layout_height="52dp"
                     android:layout_weight="1"
-                    android:text="Start"
+                    android:text="@string/btn_start"
                     android:textSize="14sp"
                     android:fontFamily="@font/quicksand_semibold"
                     style="@style/Widget.ChillGuy.Button.Primary"
@@ -115,7 +118,7 @@
                     android:layout_width="0dp"
                     android:layout_height="52dp"
                     android:layout_weight="1"
-                    android:text="Pause"
+                    android:text="@string/btn_pause"
                     android:textSize="14sp"
                     android:fontFamily="@font/quicksand_medium"
                     style="@style/Widget.ChillGuy.Button.Secondary"
@@ -140,7 +143,6 @@
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -19,6 +18,7 @@ import com.example.chillguy.database.AppDatabase;
 import com.example.chillguy.database.WorkoutProgress;
 import com.example.chillguy.model.Exercise;
 import com.example.chillguy.model.WorkoutDay;
+import com.example.chillguy.view.CircularTimerView;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class WorkoutDetailActivity extends AppCompatActivity {
     public static final String EXTRA_WORKOUT_DAY = "extra_workout_day";
 
     private TextView     tvDayTitle, tvTimer, tvMotivation;
-    private ProgressBar  progressRing;
+    private CircularTimerView progressRing;
     private MaterialButton btnStart, btnPause;
     private RecyclerView rvExercises;
 
@@ -56,7 +56,7 @@ public class WorkoutDetailActivity extends AppCompatActivity {
         tvDayTitle   = findViewById(R.id.tvDayTitle);
         tvTimer      = findViewById(R.id.tvTimer);
         tvMotivation = findViewById(R.id.tvMotivation);
-        progressRing = findViewById(R.id.progressRing);
+        progressRing = findViewById(R.id.circularTimer);
         btnStart     = findViewById(R.id.btnStart);
         btnPause     = findViewById(R.id.btnPause);
         rvExercises  = findViewById(R.id.rvExercises);
@@ -97,8 +97,7 @@ public class WorkoutDetailActivity extends AppCompatActivity {
         timeLeftMillis = ex.getDurationSeconds() * 1000L;
 
         updateTimerDisplay(timeLeftMillis);
-        progressRing.setMax(ex.getDurationSeconds());
-        progressRing.setProgress(0);
+        progressRing.setProgress(0f);
 
         exerciseAdapter.setCurrentIndex(index);
         exerciseAdapter.notifyDataSetChanged();
@@ -124,14 +123,14 @@ public class WorkoutDetailActivity extends AppCompatActivity {
                 timeLeftMillis = millisUntilFinished;
                 updateTimerDisplay(millisUntilFinished);
 
-                int elapsed = (int) ((totalSeconds * 1000L - millisUntilFinished) / 1000);
-                progressRing.setProgress(elapsed);
+                float progress = (float) (totalSeconds * 1000L - millisUntilFinished) / (totalSeconds * 1000L);
+                progressRing.setProgress(progress);
             }
 
             @Override
             public void onFinish() {
                 isRunning = false;
-                progressRing.setProgress(totalSeconds);
+                progressRing.setProgress(1f);
                 currentIndex++;
                 loadExercise(currentIndex);
             }
