@@ -51,6 +51,7 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
             if (musicService.isPlaying()) {
                 tvNowPlaying.setText("▶ " + musicService.getCurrentTitle()
                         + " – " + musicService.getCurrentArtist());
+                adapter.setPlayingResumed();
             }
         }
         @Override
@@ -108,7 +109,6 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
 
     private void loadMusic() {
         if (!isAdded()) return;
-
         if (NetworkHelper.isConnected(requireContext())) {
             fetchFromApi("workout motivation");
         } else {
@@ -131,15 +131,12 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
                     if (response.isSuccessful() && response.body() != null
                             && response.body().getData() != null
                             && !response.body().getData().isEmpty()) {
-
                         List<Track> tracks = response.body().getData();
                         adapter.setData(tracks);
                         layoutError.setVisibility(View.GONE);
                         rvMusic.setVisibility(View.VISIBLE);
                         tvCacheInfo.setVisibility(View.GONE);
-
                         saveToCache(tracks);
-
                     } else {
                         loadFromCache();
                     }
@@ -165,7 +162,6 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
             mainHandler.post(() -> {
                 if (!isAdded()) return;
                 showLoading(false);
-
                 if (cached != null && !cached.isEmpty()) {
                     List<Track> tracks = convertCachedToTrack(cached);
                     adapter.setData(tracks);
@@ -229,15 +225,21 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
         if (!isBound || musicService == null) return;
 
         if (playingPosition == position) {
-            if (musicService.isPlaying()) musicService.pauseMusic();
-            else musicService.resumeMusic();
+            if (musicService.isPlaying()) {
+                musicService.pauseMusic();
+            } else {
+                musicService.resumeMusic();
+            }
         } else {
             int old = playingPosition;
             playingPosition = position;
             if (old != -1) adapter.setPlayingPosition(-1);
 
             if (track.getPreviewUrl() != null && !track.getPreviewUrl().isEmpty()) {
-                musicService.playTrack(track.getPreviewUrl(), track.getTitle(), track.getArtistName());
+                musicService.playTrack(
+                        track.getPreviewUrl(),
+                        track.getTitle(),
+                        track.getArtistName());
                 adapter.setPlayingPosition(position);
             } else {
                 Toast.makeText(requireContext(), "No preview available", Toast.LENGTH_SHORT).show();
@@ -253,7 +255,7 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
             if (musicService != null)
                 tvNowPlaying.setText("▶ " + musicService.getCurrentTitle()
                         + " – " + musicService.getCurrentArtist());
-            adapter.setPlayingPosition(playingPosition);
+            adapter.setPlayingResumed();
         });
     }
 
@@ -262,7 +264,7 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
         if (!isAdded()) return;
         requireActivity().runOnUiThread(() -> {
             tvNowPlaying.setText("⏸ Paused");
-            adapter.setPlayingPosition(playingPosition);
+            adapter.setPlayingPaused();
         });
     }
 
