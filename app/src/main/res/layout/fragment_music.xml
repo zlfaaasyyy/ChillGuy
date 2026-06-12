@@ -7,9 +7,10 @@
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:paddingStart="20dp" android:paddingEnd="20dp"
-        android:paddingTop="20dp" android:paddingBottom="12dp" android:gravity="center_vertical">
-        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-            android:text="Workout Vibes" android:textSize="20sp" android:fontFamily="@font/quicksand_semibold"
+        android:paddingTop="20dp" android:paddingBottom="8dp" android:gravity="center_vertical">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="Workout Vibes" android:textSize="20sp"
+            android:fontFamily="@font/quicksand_semibold"
             android:textColor="?android:attr/textColorPrimary"/>
     </LinearLayout>
 
@@ -23,9 +24,22 @@
         android:textColor="?attr/colorPrimary"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="4dp"
         android:singleLine="true"
         android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/tvCacheInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📴 Offline — showing cached tracks"
+        android:textSize="11sp"
+        android:fontFamily="@font/quicksand_regular"
+        android:textColor="@color/secondary_text"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/progressLoading"
@@ -41,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingStart="20dp" android:paddingEnd="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="100dp"
         android:clipToPadding="false"
         android:visibility="visible" />
@@ -55,12 +70,8 @@
         android:padding="40dp"
         android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="😔"
-            android:textSize="48sp"
-            android:layout_marginBottom="12dp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="😔" android:textSize="48sp" android:layout_marginBottom="12dp" />
 
         <TextView
             android:id="@+id/tvErrorMsg"
@@ -77,7 +88,7 @@
             android:id="@+id/btnRefresh"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:text="Refresh"
+            android:text="@string/btn_refresh"
             android:textSize="13sp"
             android:fontFamily="@font/quicksand_semibold"
             style="@style/Widget.ChillGuy.Button.Secondary"

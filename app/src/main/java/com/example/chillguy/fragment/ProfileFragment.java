@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import com.example.chillguy.R;
 import com.example.chillguy.activity.WelcomeActivity;
+import com.example.chillguy.activity.MainActivity;
 import com.example.chillguy.database.AppDatabase;
 import com.example.chillguy.helper.SharedPrefHelper;
 import com.google.android.material.button.MaterialButton;
@@ -36,12 +37,12 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         prefHelper = new SharedPrefHelper(requireContext());
 
-        tvUsername       = view.findViewById(R.id.tvUsername);
-        tvEmail          = view.findViewById(R.id.tvEmail);
-        tvTotalWorkouts  = view.findViewById(R.id.tvTotalWorkouts);
-        tvActiveDays     = view.findViewById(R.id.tvActiveDays);
-        switchDarkMode   = view.findViewById(R.id.switchDarkMode);
-        btnLogout        = view.findViewById(R.id.btnLogout);
+        tvUsername      = view.findViewById(R.id.tvUsername);
+        tvEmail         = view.findViewById(R.id.tvEmail);
+        tvTotalWorkouts = view.findViewById(R.id.tvTotalWorkouts);
+        tvActiveDays    = view.findViewById(R.id.tvActiveDays);
+        switchDarkMode  = view.findViewById(R.id.switchDarkMode);
+        btnLogout       = view.findViewById(R.id.btnLogout);
 
         tvUsername.setText(prefHelper.getUsername());
         tvEmail.setText(prefHelper.getEmail());
@@ -53,9 +54,10 @@ public class ProfileFragment extends Fragment {
             prefHelper.setDarkTheme(isChecked);
             AppCompatDelegate.setDefaultNightMode(
                     isChecked ? AppCompatDelegate.MODE_NIGHT_YES
-                            : AppCompatDelegate.MODE_NIGHT_NO
-            );
-            requireActivity().recreate();
+                            : AppCompatDelegate.MODE_NIGHT_NO);
+            Intent intent = new Intent(requireContext(), MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
         btnLogout.setOnClickListener(v -> {
@@ -74,7 +76,6 @@ public class ProfileFragment extends Fragment {
         Executors.newSingleThreadExecutor().execute(() -> {
             int completed = AppDatabase.getInstance(requireContext())
                     .workoutProgressDao().countCompleted();
-
             mainHandler.post(() -> {
                 if (!isAdded()) return;
                 tvTotalWorkouts.setText(String.valueOf(completed));

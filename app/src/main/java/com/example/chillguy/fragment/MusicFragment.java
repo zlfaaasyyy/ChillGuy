@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 import com.example.chillguy.R;
 import com.example.chillguy.adapter.MusicAdapter;
+import com.example.chillguy.database.AppDatabase;
+import com.example.chillguy.database.CachedTrack;
 import com.example.chillguy.helper.NetworkHelper;
 import com.example.chillguy.model.Track;
 import com.example.chillguy.network.RetrofitClient;
@@ -33,7 +35,7 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
     private ProgressBar    progressLoading;
     private LinearLayout   layoutError;
     private MaterialButton btnRefresh;
-    private TextView       tvErrorMsg, tvNowPlaying;
+    private TextView       tvErrorMsg, tvNowPlaying, tvCacheInfo;
     private MusicAdapter   adapter;
     private int            playingPosition = -1;
     private MusicService   musicService;
@@ -46,24 +48,20 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
             musicService = musicBinder.getService();
             musicService.setPlaybackListener(MusicFragment.this);
             isBound = true;
-
             if (musicService.isPlaying()) {
                 tvNowPlaying.setText("▶ " + musicService.getCurrentTitle()
                         + " – " + musicService.getCurrentArtist());
             }
         }
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-        }
+        public void onServiceDisconnected(ComponentName name) { isBound = false; }
     };
 
     private final Handler         mainHandler = new Handler(Looper.getMainLooper());
     private final ExecutorService executor    = Executors.newSingleThreadExecutor();
 
     private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
-            });
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {});
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -82,24 +80,21 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
         btnRefresh      = view.findViewById(R.id.btnRefresh);
         tvErrorMsg      = view.findViewById(R.id.tvErrorMsg);
         tvNowPlaying    = view.findViewById(R.id.tvNowPlaying);
+        tvCacheInfo     = view.findViewById(R.id.tvCacheInfo);
 
         adapter = new MusicAdapter();
         rvMusic.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvMusic.setAdapter(adapter);
 
         adapter.setOnPlayClickListener(this::handlePlayPause);
-        btnRefresh.setOnClickListener(v -> fetchMusic("workout motivation"));
+        btnRefresh.setOnClickListener(v -> loadMusic());
 
         requestNotificationPermission();
         bindMusicService();
-        fetchMusic("workout motivation");
+        loadMusic();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        bindMusicService();
-    }
+    @Override public void onStart() { super.onStart(); bindMusicService(); }
 
     @Override
     public void onStop() {
@@ -111,21 +106,17 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
         }
     }
 
-    private void bindMusicService() {
-        if (!isBound) {
-            Intent serviceIntent = new Intent(requireContext(), MusicService.class);
-            ContextCompat.startForegroundService(requireContext(), serviceIntent);
-            requireContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    private void loadMusic() {
+        if (!isAdded()) return;
+
+        if (NetworkHelper.isConnected(requireContext())) {
+            fetchFromApi("workout motivation");
+        } else {
+            loadFromCache();
         }
     }
 
-    private void fetchMusic(String query) {
-        if (!isAdded()) return;
-        if (!NetworkHelper.isConnected(requireContext())) {
-            showError("No internet connection.\nTap Refresh to try again.");
-            return;
-        }
-
+    private void fetchFromApi(String query) {
         showLoading(true);
         executor.execute(() -> {
             try {
@@ -140,43 +131,113 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
                     if (response.isSuccessful() && response.body() != null
                             && response.body().getData() != null
                             && !response.body().getData().isEmpty()) {
-                        adapter.setData(response.body().getData());
+
+                        List<Track> tracks = response.body().getData();
+                        adapter.setData(tracks);
                         layoutError.setVisibility(View.GONE);
                         rvMusic.setVisibility(View.VISIBLE);
+                        tvCacheInfo.setVisibility(View.GONE);
+
+                        saveToCache(tracks);
+
                     } else {
-                        showError("No tracks found. Tap Refresh.");
+                        loadFromCache();
                     }
                 });
             } catch (IOException e) {
                 mainHandler.post(() -> {
                     if (!isAdded()) return;
                     showLoading(false);
-                    showError("Connection failed.\nTap Refresh to try again.");
+                    loadFromCache();
                 });
             }
         });
+    }
+
+    private void loadFromCache() {
+        showLoading(true);
+        executor.execute(() -> {
+            List<CachedTrack> cached = AppDatabase
+                    .getInstance(requireContext())
+                    .cachedTrackDao()
+                    .getAllCached();
+
+            mainHandler.post(() -> {
+                if (!isAdded()) return;
+                showLoading(false);
+
+                if (cached != null && !cached.isEmpty()) {
+                    List<Track> tracks = convertCachedToTrack(cached);
+                    adapter.setData(tracks);
+                    rvMusic.setVisibility(View.VISIBLE);
+                    layoutError.setVisibility(View.GONE);
+                    tvCacheInfo.setVisibility(View.VISIBLE);
+                    tvCacheInfo.setText("📴 Offline — showing cached tracks");
+                } else {
+                    showError("No internet connection.\nOpen this page online first to cache music.");
+                }
+            });
+        });
+    }
+
+    private void saveToCache(List<Track> tracks) {
+        executor.execute(() -> {
+            List<CachedTrack> cachedList = new ArrayList<>();
+            long now = System.currentTimeMillis();
+            for (Track t : tracks) {
+                CachedTrack c = new CachedTrack();
+                c.id         = t.getId();
+                c.title      = t.getTitle();
+                c.artistName = t.getArtistName();
+                c.coverUrl   = t.getCoverUrl();
+                c.previewUrl = t.getPreviewUrl();
+                c.duration   = t.getDuration();
+                c.cachedAt   = now;
+                cachedList.add(c);
+            }
+            AppDatabase.getInstance(requireContext())
+                    .cachedTrackDao()
+                    .insertAll(cachedList);
+        });
+    }
+
+    private List<Track> convertCachedToTrack(List<CachedTrack> cached) {
+        List<Track> result = new ArrayList<>();
+        for (CachedTrack c : cached) {
+            String json = "{"
+                    + "\"id\":" + c.id + ","
+                    + "\"title\":\"" + escapeJson(c.title) + "\","
+                    + "\"duration\":" + c.duration + ","
+                    + "\"preview\":\"" + escapeJson(c.previewUrl) + "\","
+                    + "\"artist\":{\"name\":\"" + escapeJson(c.artistName) + "\"},"
+                    + "\"album\":{\"cover_medium\":\"" + escapeJson(c.coverUrl != null ? c.coverUrl : "") + "\"}"
+                    + "}";
+            try {
+                Track t = new com.google.gson.Gson().fromJson(json, Track.class);
+                result.add(t);
+            } catch (Exception ignored) {}
+        }
+        return result;
+    }
+
+    private String escapeJson(String s) {
+        if (s == null) return "";
+        return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
     private void handlePlayPause(Track track, int position) {
         if (!isBound || musicService == null) return;
 
         if (playingPosition == position) {
-            if (musicService.isPlaying()) {
-                musicService.pauseMusic();
-            } else {
-                musicService.resumeMusic();
-            }
+            if (musicService.isPlaying()) musicService.pauseMusic();
+            else musicService.resumeMusic();
         } else {
             int old = playingPosition;
             playingPosition = position;
             if (old != -1) adapter.setPlayingPosition(-1);
 
             if (track.getPreviewUrl() != null && !track.getPreviewUrl().isEmpty()) {
-                musicService.playTrack(
-                        track.getPreviewUrl(),
-                        track.getTitle(),
-                        track.getArtistName()
-                );
+                musicService.playTrack(track.getPreviewUrl(), track.getTitle(), track.getArtistName());
                 adapter.setPlayingPosition(position);
             } else {
                 Toast.makeText(requireContext(), "No preview available", Toast.LENGTH_SHORT).show();
@@ -229,8 +290,7 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
     public void onError(String message) {
         if (!isAdded()) return;
         requireActivity().runOnUiThread(() ->
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-        );
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show());
     }
 
     private void showLoading(boolean show) {
@@ -246,11 +306,18 @@ public class MusicFragment extends Fragment implements MusicService.OnPlaybackLi
         tvErrorMsg.setText(msg);
     }
 
+    private void bindMusicService() {
+        if (!isBound) {
+            Intent serviceIntent = new Intent(requireContext(), MusicService.class);
+            ContextCompat.startForegroundService(requireContext(), serviceIntent);
+            requireContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
     private void requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
+                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
             }
         }
