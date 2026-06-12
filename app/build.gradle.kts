@@ -51,8 +51,10 @@ dependencies {
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
     implementation(libs.glide)
+    implementation("androidx.media:media:1.7.0")
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.media)
 }

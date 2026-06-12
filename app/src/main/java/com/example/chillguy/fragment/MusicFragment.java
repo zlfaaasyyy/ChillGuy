@@ -1,10 +1,18 @@
 package com.example.chillguy.fragment;
 
-import android.media.MediaPlayer;
+import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.*;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 import com.example.chillguy.R;
@@ -13,29 +21,49 @@ import com.example.chillguy.helper.NetworkHelper;
 import com.example.chillguy.model.Track;
 import com.example.chillguy.network.RetrofitClient;
 import com.example.chillguy.model.DeezerResponse;
+import com.example.chillguy.service.MusicService;
 import com.google.android.material.button.MaterialButton;
-import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class MusicFragment extends Fragment {
-    private RecyclerView      rvMusic;
-    private ProgressBar       progressLoading;
-    private LinearLayout      layoutError;
-    private MaterialButton    btnRefresh;
-    private TextView          tvErrorMsg, tvNowPlaying;
-    private MusicAdapter      adapter;
-    private MediaPlayer       mediaPlayer;
-    private int               playingPosition = -1;
-    private final Handler     mainHandler = new Handler(Looper.getMainLooper());
-    private ExecutorService   executor    = Executors.newSingleThreadExecutor();
-    private static final String[] QUERIES = {
-            "workout motivation", "gym music", "fitness beats",
-            "lofi workout", "energetic workout"
+public class MusicFragment extends Fragment implements MusicService.OnPlaybackListener {
+    private RecyclerView   rvMusic;
+    private ProgressBar    progressLoading;
+    private LinearLayout   layoutError;
+    private MaterialButton btnRefresh;
+    private TextView       tvErrorMsg, tvNowPlaying;
+    private MusicAdapter   adapter;
+    private int            playingPosition = -1;
+    private MusicService   musicService;
+    private boolean        isBound = false;
+
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            MusicService.MusicBinder musicBinder = (MusicService.MusicBinder) binder;
+            musicService = musicBinder.getService();
+            musicService.setPlaybackListener(MusicFragment.this);
+            isBound = true;
+
+            if (musicService.isPlaying()) {
+                tvNowPlaying.setText("▶ " + musicService.getCurrentTitle()
+                        + " – " + musicService.getCurrentArtist());
+            }
+        }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+        }
     };
-    private int queryIndex = 0;
+
+    private final Handler         mainHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService executor    = Executors.newSingleThreadExecutor();
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
+            });
 
     @Nullable @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -59,23 +87,46 @@ public class MusicFragment extends Fragment {
         rvMusic.setLayoutManager(new LinearLayoutManager(requireContext()));
         rvMusic.setAdapter(adapter);
 
-        adapter.setOnPlayClickListener((track, position) -> handlePlayPause(track, position));
+        adapter.setOnPlayClickListener(this::handlePlayPause);
+        btnRefresh.setOnClickListener(v -> fetchMusic("workout motivation"));
 
-        btnRefresh.setOnClickListener(v -> fetchMusic(QUERIES[queryIndex % QUERIES.length]));
+        requestNotificationPermission();
+        bindMusicService();
+        fetchMusic("workout motivation");
+    }
 
-        fetchMusic(QUERIES[queryIndex]);
+    @Override
+    public void onStart() {
+        super.onStart();
+        bindMusicService();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isBound) {
+            musicService.setPlaybackListener(null);
+            requireContext().unbindService(serviceConnection);
+            isBound = false;
+        }
+    }
+
+    private void bindMusicService() {
+        if (!isBound) {
+            Intent serviceIntent = new Intent(requireContext(), MusicService.class);
+            ContextCompat.startForegroundService(requireContext(), serviceIntent);
+            requireContext().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     private void fetchMusic(String query) {
         if (!isAdded()) return;
-
         if (!NetworkHelper.isConnected(requireContext())) {
-            showError("No internet connection.\nShowing cached results.");
+            showError("No internet connection.\nTap Refresh to try again.");
             return;
         }
 
         showLoading(true);
-
         executor.execute(() -> {
             try {
                 Response<DeezerResponse> response = RetrofitClient
@@ -93,66 +144,93 @@ public class MusicFragment extends Fragment {
                         layoutError.setVisibility(View.GONE);
                         rvMusic.setVisibility(View.VISIBLE);
                     } else {
-                        showError("No tracks found. Try refreshing.");
+                        showError("No tracks found. Tap Refresh.");
                     }
                 });
-
             } catch (IOException e) {
                 mainHandler.post(() -> {
                     if (!isAdded()) return;
                     showLoading(false);
-                    showError("Connection failed.\nCheck your internet and retry.");
+                    showError("Connection failed.\nTap Refresh to try again.");
                 });
             }
         });
     }
 
     private void handlePlayPause(Track track, int position) {
+        if (!isBound || musicService == null) return;
+
         if (playingPosition == position) {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                tvNowPlaying.setText("Paused");
-            } else if (mediaPlayer != null) {
-                mediaPlayer.start();
-                tvNowPlaying.setText("▶ " + track.getTitle());
+            if (musicService.isPlaying()) {
+                musicService.pauseMusic();
+            } else {
+                musicService.resumeMusic();
             }
         } else {
-            stopMedia();
+            int old = playingPosition;
+            playingPosition = position;
+            if (old != -1) adapter.setPlayingPosition(-1);
 
             if (track.getPreviewUrl() != null && !track.getPreviewUrl().isEmpty()) {
-                try {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setDataSource(track.getPreviewUrl());
-                    mediaPlayer.prepareAsync();
-                    mediaPlayer.setOnPreparedListener(mp -> {
-                        mp.start();
-                        tvNowPlaying.setText("▶ " + track.getTitle() + " – " + track.getArtistName());
-                    });
-                    mediaPlayer.setOnCompletionListener(mp -> {
-                        playingPosition = -1;
-                        adapter.setPlayingPosition(-1);
-                        tvNowPlaying.setText("");
-                    });
-                    playingPosition = position;
-                    adapter.setPlayingPosition(position);
-                } catch (IOException e) {
-                    Toast.makeText(requireContext(), "Cannot play preview", Toast.LENGTH_SHORT).show();
-                }
+                musicService.playTrack(
+                        track.getPreviewUrl(),
+                        track.getTitle(),
+                        track.getArtistName()
+                );
+                adapter.setPlayingPosition(position);
             } else {
                 Toast.makeText(requireContext(), "No preview available", Toast.LENGTH_SHORT).show();
+                playingPosition = -1;
             }
         }
     }
 
-    private void stopMedia() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        playingPosition = -1;
-        adapter.setPlayingPosition(-1);
-        tvNowPlaying.setText("");
+    @Override
+    public void onPlaybackStarted() {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            if (musicService != null)
+                tvNowPlaying.setText("▶ " + musicService.getCurrentTitle()
+                        + " – " + musicService.getCurrentArtist());
+            adapter.setPlayingPosition(playingPosition);
+        });
+    }
+
+    @Override
+    public void onPlaybackPaused() {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            tvNowPlaying.setText("⏸ Paused");
+            adapter.setPlayingPosition(playingPosition);
+        });
+    }
+
+    @Override
+    public void onPlaybackStopped() {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            tvNowPlaying.setText("");
+            playingPosition = -1;
+            adapter.setPlayingPosition(-1);
+        });
+    }
+
+    @Override
+    public void onPlaybackCompleted() {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() -> {
+            tvNowPlaying.setText("");
+            playingPosition = -1;
+            adapter.setPlayingPosition(-1);
+        });
+    }
+
+    @Override
+    public void onError(String message) {
+        if (!isAdded()) return;
+        requireActivity().runOnUiThread(() ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        );
     }
 
     private void showLoading(boolean show) {
@@ -164,9 +242,23 @@ public class MusicFragment extends Fragment {
     private void showError(String msg) {
         layoutError.setVisibility(View.VISIBLE);
         rvMusic.setVisibility(View.GONE);
+        progressLoading.setVisibility(View.GONE);
         tvErrorMsg.setText(msg);
     }
 
-    @Override public void onPause()   { super.onPause();   stopMedia(); }
-    @Override public void onDestroy() { super.onDestroy(); stopMedia(); if (executor != null) executor.shutdown(); }
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (executor != null) executor.shutdown();
+    }
 }
